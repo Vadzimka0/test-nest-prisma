@@ -16,8 +16,24 @@ export class PostService {
     });
   }
 
-  findAll() {
-    return this.prisma.post.findMany();
+  findAll(skip?: number, take?: number, query?: string) {
+    return this.prisma.post.findMany({
+      skip,
+      take,
+      where: {
+        OR: [
+          {
+            title: { contains: query },
+          },
+          {
+            content: { contains: query },
+          },
+        ],
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
   }
 
   async findOne(id: string) {
@@ -31,8 +47,6 @@ export class PostService {
   }
 
   async update(id: string, updatePostDto: UpdatePostDto) {
-    const post = await this.findOne(id);
-
     //TODO: check if (post.authorId !== user from token) then - Forbidden
 
     return this.prisma.post.update({

@@ -6,40 +6,52 @@ import {
   Param,
   Delete,
   Put,
+  HttpCode,
+  Query,
 } from '@nestjs/common';
-import { Role } from '@prisma/client';
+// import { Role } from '@prisma/client';
 
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { QueryParamsDto } from 'src/user/dto/query-params.dto';
 
 @Controller('posts')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
-  //TODO: Implement Guard - User
+  //TODO: only for Auth User
   @Post()
-  create(@Body() createPostDto: CreatePostDto) {
-    return this.postService.create(createPostDto);
+  async create(@Body() createPostDto: CreatePostDto) {
+    const post = await this.postService.create(createPostDto);
+
+    return { data: post };
   }
 
   @Get()
-  findAll() {
-    return this.postService.findAll();
+  async findAll(@Query() { skip, take, query }: QueryParamsDto) {
+    const posts = await this.postService.findAll(skip, take, query);
+
+    return { data: posts, count: posts.length };
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    const post = await this.postService.findOne(id);
+
+    return { data: post };
   }
 
-  //TODO: Implement Guard - User
+  //TODO: only for User-Author
   @Put(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postService.update(id, updatePostDto);
+  async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
+    const post = await this.postService.update(id, updatePostDto);
+
+    return { data: post };
   }
 
-  //TODO: Implement Guard - Admin or User
+  //TODO: only for - Admin or User-Author
+  @HttpCode(204)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.postService.remove(id);

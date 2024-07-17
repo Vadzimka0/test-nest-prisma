@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  // create two dummy posts
+  // create one ADMIN user
   const user1 = await prisma.user.upsert({
     where: { id: '9c7eb841-cb84-4b05-9487-9d29cb89f1a9' },
     update: {},
@@ -13,6 +13,46 @@ async function main() {
       email: 'admin@testmail.com',
       password: 'password',
       role: 'ADMIN',
+    },
+  });
+  const user2 = await prisma.user.upsert({
+    where: { id: '1c7eb841-cb84-4b05-9487-9d29cb89f1a1' },
+    update: {},
+    create: {
+      id: '1c7eb841-cb84-4b05-9487-9d29cb89f1a1',
+      email: 'user01@testmail.com',
+      password: 'password',
+      role: 'USER',
+    },
+  });
+  const user3 = await prisma.user.upsert({
+    where: { id: '1c7eb841-cb84-4b05-9487-9d29cb89f1a2' },
+    update: {},
+    create: {
+      id: '1c7eb841-cb84-4b05-9487-9d29cb89f1a2',
+      email: 'user02@testmail.com',
+      password: 'password',
+      role: 'USER',
+    },
+  });
+  const user4 = await prisma.user.upsert({
+    where: { id: '1c7eb841-cb84-4b05-9487-9d29cb89f1a3' },
+    update: {},
+    create: {
+      id: '1c7eb841-cb84-4b05-9487-9d29cb89f1a3',
+      email: 'user03@testmail.com',
+      password: 'password',
+      role: 'USER',
+    },
+  });
+  const user5 = await prisma.user.upsert({
+    where: { id: '1c7eb841-cb84-4b05-9487-9d29cb89f1a4' },
+    update: {},
+    create: {
+      id: '1c7eb841-cb84-4b05-9487-9d29cb89f1a4',
+      email: 'user04@testmail.com',
+      password: 'password',
+      role: 'USER',
     },
   });
 
@@ -41,7 +81,7 @@ async function main() {
     },
   });
 
-  console.log({ user1, post1, post2 });
+  console.log({ user1, user2, user3, user4, user5, post1, post2 });
 }
 
 // execute the main function
