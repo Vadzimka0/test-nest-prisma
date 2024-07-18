@@ -1,4 +1,10 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { Role } from '@prisma/client';
+import type { User as UserType } from '@prisma/client';
 
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -7,11 +13,11 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class PostService {
   constructor(private prisma: PrismaService) {}
-  create(createPostDto: CreatePostDto) {
+  create(createPostDto: CreatePostDto, authorId: string) {
     return this.prisma.post.create({
       data: {
         ...createPostDto,
-        authorId: '9c7eb841-cb84-4b05-9487-9d29cb89f1a9',
+        authorId,
       },
     });
   }
@@ -40,14 +46,24 @@ export class PostService {
     const post = await this.prisma.post.findUnique({ where: { id } });
 
     if (!post) {
-      throw new UnprocessableEntityException(`Post with id ${id} not found`);
+      throw new NotFoundException(`Post with id ${id} not found`);
     }
 
     return post;
   }
 
-  async update(id: string, updatePostDto: UpdatePostDto) {
-    //TODO: check if (post.authorId !== user from token) then - Forbidden
+  async update(
+    id: string,
+    currentUserId: string,
+    updatePostDto: UpdatePostDto,
+  ) {
+    const post = await this.findOne(id);
+
+    if (post.authorId !== currentUserId) {
+      throw new ForbiddenException(
+        'You do not have permission to update this post',
+      );
+    }
 
     return this.prisma.post.update({
       where: { id },
@@ -57,16 +73,15 @@ export class PostService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: string, currentUser: UserType) {
     const post = await this.findOne(id);
 
-    //TODO:
-    // if (userRole === Role.ADMIN || post.authorId === userId ) {
-    return this.prisma.post.delete({ where: { id } });
-    // }
+    if (currentUser.role === Role.ADMIN || post.authorId === currentUser.id) {
+      return this.prisma.post.delete({ where: { id } });
+    }
 
-    //   throw new ForbiddenException(
-    //     'You do not have permission to delete this post',
-    //   );
+    throw new ForbiddenException(
+      'You do not have permission to delete this post',
+    );
   }
 }

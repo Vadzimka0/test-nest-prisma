@@ -11,7 +11,7 @@ async function main() {
     create: {
       id: '9c7eb841-cb84-4b05-9487-9d29cb89f1a9',
       email: 'admin@testmail.com',
-      password: 'password',
+      password: '$2a$10$DU6Tl2SX3YWMp7sbxFAbFepVcqhsXo5dhbp43XgpJERSip3wf7V7G', //adminpasswd
       role: 'ADMIN',
     },
   });
@@ -21,7 +21,7 @@ async function main() {
     create: {
       id: '1c7eb841-cb84-4b05-9487-9d29cb89f1a1',
       email: 'user01@testmail.com',
-      password: 'password',
+      password: '$2a$10$PEMU8mfg1r4aSFrbgWhfz.kHBCAFsCd9uh3iV6iQUEblx9M6jWkhu', //somepasswd
       role: 'USER',
     },
   });
@@ -31,7 +31,7 @@ async function main() {
     create: {
       id: '1c7eb841-cb84-4b05-9487-9d29cb89f1a2',
       email: 'user02@testmail.com',
-      password: 'password',
+      password: '$2a$10$PEMU8mfg1r4aSFrbgWhfz.kHBCAFsCd9uh3iV6iQUEblx9M6jWkhu', //somepasswd
       role: 'USER',
     },
   });
@@ -41,7 +41,7 @@ async function main() {
     create: {
       id: '1c7eb841-cb84-4b05-9487-9d29cb89f1a3',
       email: 'user03@testmail.com',
-      password: 'password',
+      password: '$2a$10$PEMU8mfg1r4aSFrbgWhfz.kHBCAFsCd9uh3iV6iQUEblx9M6jWkhu', //somepasswd
       role: 'USER',
     },
   });
@@ -51,7 +51,7 @@ async function main() {
     create: {
       id: '1c7eb841-cb84-4b05-9487-9d29cb89f1a4',
       email: 'user04@testmail.com',
-      password: 'password',
+      password: '$2a$10$PEMU8mfg1r4aSFrbgWhfz.kHBCAFsCd9uh3iV6iQUEblx9M6jWkhu', //somepasswd
       role: 'USER',
     },
   });

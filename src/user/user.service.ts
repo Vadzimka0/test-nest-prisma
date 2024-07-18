@@ -1,6 +1,12 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { Role } from '@prisma/client';
+import type { User as UserType } from '@prisma/client';
 
-// import { CreateUserDto } from './dto/create-user.dto';
+import { AuthDto } from 'src/auth/dto/auth.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -8,9 +14,11 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  // create(createUserDto: CreateUserDto) {
-  //   return 'This action adds a new user';
-  // }
+  create(createUserData: AuthDto) {
+    return this.prisma.user.create({
+      data: createUserData,
+    });
+  }
 
   findAll(skip?: number, take?: number, query?: string) {
     return this.prisma.user.findMany({
@@ -24,29 +32,69 @@ export class UserService {
       orderBy: {
         createdAt: 'asc',
       },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        password: false,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
   }
 
-  async findOne(id: string) {
-    //add current user id as arg
+  async findOne(id: string, currentUser: UserType) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        password: false,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
 
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+
+    if (currentUser.role === Role.ADMIN || user.id === currentUser.id) {
+      return user;
+    }
+
+    throw new ForbiddenException(
+      'You do not have permission to act on this user',
+    );
+  }
+
+  async findOneById(id: string) {
     const user = await this.prisma.user.findUnique({ where: { id } });
 
     if (!user) {
-      throw new UnprocessableEntityException(`User with id ${id} not found`);
+      throw new NotFoundException(`User with id ${id} not found`);
     }
-    //TODO:
-    // if (userRole === Role.ADMIN || user.id === userId ) {
-    return user;
-    // }
 
-    //   throw new ForbiddenException(
-    //     'You do not have permission to delete this post',
-    //   );
+    return user;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
-    await this.findOne(id); //add current user id as parameter
+  async findOneByEmail(email: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      throw new NotFoundException(`User with email ${email} not found`);
+    }
+
+    return user;
+  }
+
+  async update(
+    id: string,
+    currentUser: UserType,
+    updateUserDto: UpdateUserDto,
+  ) {
+    await this.findOne(id, currentUser);
 
     return this.prisma.user.update({
       where: { id },
@@ -56,8 +104,8 @@ export class UserService {
     });
   }
 
-  async remove(id: string) {
-    await this.findOne(id); //add current user id as parameter
+  async remove(id: string, currentUser: UserType) {
+    await this.findOne(id, currentUser);
 
     return this.prisma.user.delete({ where: { id } });
   }

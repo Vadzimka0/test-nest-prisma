@@ -7,18 +7,23 @@ import {
   Query,
   Put,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
+import { Role } from '@prisma/client';
+import type { User as UserType } from '@prisma/client';
 
 import { UserService } from './user.service';
-// import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { QueryParamsDto } from './dto/query-params.dto';
+import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
+import { Roles, User } from 'src/auth/decorators';
 
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  //TODO: only for ADMIN users
+  @Roles(Role.ADMIN)
   @Get()
   async findAll(@Query() { skip, take, query }: QueryParamsDto) {
     const users = await this.userService.findAll(skip, take, query);
@@ -26,26 +31,27 @@ export class UserController {
     return { data: users, count: users.length };
   }
 
-  //TODO: only for ADMIN and current USER
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const user = await this.userService.findOne(id);
+  async findOne(@Param('id') id: string, @User() currentUser: UserType) {
+    const user = await this.userService.findOne(id, currentUser);
 
     return { data: user };
   }
 
-  //TODO: only for ADMIN and current USER
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    const user = await this.userService.update(id, updateUserDto);
+  async update(
+    @Param('id') id: string,
+    @User() currentUser: UserType,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    const user = await this.userService.update(id, currentUser, updateUserDto);
 
     return { data: user };
   }
 
-  //TODO: only for ADMIN and current USER
   @HttpCode(204)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(id);
+  remove(@Param('id') id: string, @User() currentUser: UserType) {
+    return this.userService.remove(id, currentUser);
   }
 }
