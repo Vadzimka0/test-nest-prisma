@@ -83,9 +83,6 @@ Also, project deployed on remote server and available on url [http://test.wdenis
 # unit tests
 $ npm run test
 
-# e2e tests
-$ npm run test:e2e
-
 # test coverage
 $ npm run test:cov
 ```
