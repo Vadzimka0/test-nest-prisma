@@ -16,9 +16,9 @@ import type { User as UserType } from '@prisma/client';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { QueryParamsDto } from 'src/user/dto/query-params.dto';
-import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
-import { Roles, User } from 'src/auth/decorators';
+import { QueryParamsDto } from '../../src/user/dto/query-params.dto';
+import { JwtAuthGuard, RolesGuard } from '../../src/auth/guards';
+import { Roles, User } from '../../src/auth/decorators';
 
 @Controller('posts')
 export class PostController {

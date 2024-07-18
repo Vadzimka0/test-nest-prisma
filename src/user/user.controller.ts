@@ -15,8 +15,8 @@ import type { User as UserType } from '@prisma/client';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { QueryParamsDto } from './dto/query-params.dto';
-import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
-import { Roles, User } from 'src/auth/decorators';
+import { JwtAuthGuard, RolesGuard } from '../auth/guards';
+import { Roles, User } from '../auth/decorators';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')
