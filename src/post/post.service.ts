@@ -27,14 +27,7 @@ export class PostService {
       skip,
       take,
       where: {
-        OR: [
-          {
-            title: { contains: query },
-          },
-          {
-            content: { contains: query },
-          },
-        ],
+        title: { contains: query },
       },
       orderBy: {
         createdAt: 'asc',
